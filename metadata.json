@@ -1,0 +1,5 @@
+{
+  "name": "JUHA Blog Thumbnail",
+  "description": "A tool to create Naver Blog-optimized thumbnails. Customize background images, add titles and subtitles with specific styling, and download the final image as a clean, SEO-friendly .webp file.",
+  "requestFramePermissions": []
+}
