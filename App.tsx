@@ -1,3 +1,5 @@
+
+
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { ControlPanel } from './components/ControlPanel';
 import { Preview } from './components/Preview';
@@ -12,10 +14,9 @@ import {
   DEFAULT_DOWNLOAD_SIZE,
   DEFAULT_TEXT_STYLE,
   DEFAULT_BOX_COLOR_TYPE,
-  DEFAULT_BOX_TRANSPARENCY,
   DEFAULT_OUTLINE_COLOR,
 } from './constants';
-import { TextPosition, DownloadFormat, DownloadSize, Theme, TextStyle, BoxColorType, BoxTransparency } from './types';
+import { TextPosition, DownloadFormat, DownloadSize, Theme, TextStyle, BoxColorType } from './types';
 import { ThemeToggle } from './components/ThemeToggle';
 
 const App: React.FC = () => {
@@ -32,8 +33,8 @@ const App: React.FC = () => {
   const [textStyle, setTextStyle] = useState<TextStyle>(DEFAULT_TEXT_STYLE);
   const [outlineColor, setOutlineColor] = useState<string>(DEFAULT_OUTLINE_COLOR);
   const [boxColorType, setBoxColorType] = useState<BoxColorType>(DEFAULT_BOX_COLOR_TYPE);
-  const [boxTransparency, setBoxTransparency] = useState<BoxTransparency>(DEFAULT_BOX_TRANSPARENCY);
 
+  // Fix: Initialize canvasRef to hold a reference to the canvas element.
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -78,18 +79,18 @@ const App: React.FC = () => {
   }, [filename, downloadFormat, downloadSize]);
 
   return (
-    <div className="relative min-h-screen bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-slate-200 font-sans p-4 lg:p-8 selection:bg-blue-500 selection:text-white transition-colors duration-300">
+    <div className="relative min-h-screen bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-slate-200 font-sans p-4 lg:p-8 selection:bg-orange-500 selection:text-white transition-colors duration-300">
       <ThemeToggle theme={theme} setTheme={setTheme} />
-      <main className="container mx-auto">
+      <main className="max-w-screen-xl mx-auto">
         <header className="text-center mb-8">
             <div className="flex justify-center items-center">
-                <h1 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">JUHA Blog Thumbnail</h1>
+                <h1 className="text-3xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-orange-400 dark:from-orange-500 dark:to-orange-300">JUHA Blog Thumbnail</h1>
             </div>
             <p className="text-slate-500 dark:text-slate-400 mt-2 text-base md:text-lg">Blogger용 이미지 최적화 프로그램</p>
         </header>
         
         <div className="flex flex-col lg:flex-row gap-8">
-          <div className="lg:w-2/5 flex justify-center items-start">
+          <div className="lg:w-2/5 flex justify-center">
             <div className="w-full max-w-md aspect-square sticky top-8">
                <Preview
                 ref={canvasRef}
@@ -102,7 +103,6 @@ const App: React.FC = () => {
                 textStyle={textStyle}
                 outlineColor={outlineColor}
                 boxColorType={boxColorType}
-                boxTransparency={boxTransparency}
               />
             </div>
           </div>
@@ -133,8 +133,6 @@ const App: React.FC = () => {
               setOutlineColor={setOutlineColor}
               boxColorType={boxColorType}
               setBoxColorType={setBoxColorType}
-              boxTransparency={boxTransparency}
-              setBoxTransparency={setBoxTransparency}
             />
           </div>
         </div>

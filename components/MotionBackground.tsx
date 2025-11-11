@@ -15,7 +15,7 @@ const Shape: React.FC<{ position: THREE.Vector3, rotationSpeed: number }> = ({ p
   return (
     <mesh ref={meshRef} position={position}>
       <icosahedronGeometry args={[0.7, 0]} />
-      <meshStandardMaterial color="#3b82f6" roughness={0.4} metalness={0.6} />
+      <meshStandardMaterial color="#f97316" roughness={0.4} metalness={0.6} />
     </mesh>
   );
 };
@@ -37,7 +37,7 @@ export const MotionBackground: React.FC = () => {
       <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} intensity={1} />
-        <pointLight position={[-10, -10, -10]} intensity={0.5} color="#4f46e5" />
+        <pointLight position={[-10, -10, -10]} intensity={0.5} color="#ea580c" />
         {shapes.map((shape, index) => (
           <Shape key={index} position={shape.position} rotationSpeed={shape.rotationSpeed} />
         ))}

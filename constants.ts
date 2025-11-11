@@ -1,10 +1,10 @@
-import { ColorOption, TextPosition, TextStyle, BoxColorType, BoxTransparency } from './types';
+import { ColorOption, TextPosition, TextStyle, BoxColorType } from './types';
 
 export const CANVAS_WIDTH = 1080;
 export const CANVAS_HEIGHT = 1080;
 
 export const DEFAULT_TITLE = '우리집 도서관';
-export const DEFAULT_SUBTITLE = '아이와 엄마가 책과 함께 성장하는 곳';
+export const DEFAULT_SUBTITLE = 'Reading Together, Growing Together';
 export const DEFAULT_FILENAME = 'MyFamilyLibrary';
 export const DEFAULT_TEXT_POSITION = TextPosition.Bottom;
 export const DEFAULT_BRIGHTNESS = 0.1;
@@ -25,7 +25,7 @@ export const COLOR_PALETTE: ColorOption[] = [
   { name: 'Black', hex: '#000000' },
 ];
 
-export const DEFAULT_COLOR = '#FFFFFF'; // Default is White
+export const DEFAULT_COLOR = '#F97316'; // Default is Orange
 
 export const BRIGHTNESS_LEVELS = [
   { name: '0%', value: 0 },
@@ -49,8 +49,7 @@ export const DEFAULT_DOWNLOAD_FORMAT = 'webp';
 export const DEFAULT_DOWNLOAD_SIZE = 800;
 
 export const DEFAULT_TEXT_STYLE: TextStyle = 'box';
-export const DEFAULT_BOX_COLOR_TYPE: BoxColorType = 'auto';
-export const DEFAULT_BOX_TRANSPARENCY: BoxTransparency = 'normal';
+export const DEFAULT_BOX_COLOR_TYPE: BoxColorType = 'light';
 
 export const DEFAULT_OUTLINE_COLOR = '#333333';
 export const OUTLINE_COLORS: ColorOption[] = [
@@ -63,9 +62,4 @@ export const BOX_COLOR_TYPES = [
     { name: 'Auto', value: 'auto' as BoxColorType },
     { name: 'Light', value: 'light' as BoxColorType },
     { name: 'Dark', value: 'dark' as BoxColorType },
-];
-
-export const BOX_TRANSPARENCY_LEVELS = [
-    { name: 'Normal', value: 'normal' as BoxTransparency },
-    { name: 'Deep', value: 'deep' as BoxTransparency },
 ];

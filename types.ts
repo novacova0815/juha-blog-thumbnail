@@ -17,4 +17,3 @@ export type Theme = 'light' | 'dark';
 
 export type TextStyle = 'none' | 'outline' | 'box';
 export type BoxColorType = 'auto' | 'light' | 'dark';
-export type BoxTransparency = 'normal' | 'deep';

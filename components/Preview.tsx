@@ -1,5 +1,6 @@
+
 import React, { useRef, useEffect, forwardRef } from 'react';
-import { TextPosition, TextStyle, BoxColorType, BoxTransparency } from '../types';
+import { TextPosition, TextStyle, BoxColorType } from '../types';
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from '../constants';
 
 interface PreviewProps {
@@ -12,7 +13,6 @@ interface PreviewProps {
   textStyle: TextStyle;
   outlineColor: string;
   boxColorType: BoxColorType;
-  boxTransparency: BoxTransparency;
 }
 
 const adjustColorBrightness = (hex: string, percent: number): string => {
@@ -65,7 +65,7 @@ const wrapText = (context: CanvasRenderingContext2D, text: string, maxWidth: num
 
 
 export const Preview = forwardRef<HTMLCanvasElement, PreviewProps>(({
-  backgroundImage, title, subtitle, textPosition, textColor, brightness, textStyle, outlineColor, boxColorType, boxTransparency
+  backgroundImage, title, subtitle, textPosition, textColor, brightness, textStyle, outlineColor, boxColorType
 }, ref) => {
     const internalCanvasRef = useRef<HTMLCanvasElement>(null);
     const canvasRef = (ref || internalCanvasRef) as React.RefObject<HTMLCanvasElement>;
@@ -77,13 +77,9 @@ export const Preview = forwardRef<HTMLCanvasElement, PreviewProps>(({
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        // Clear canvas
-        ctx.fillStyle = '#0f172a'; // Default dark background (slate-900)
-        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
         const draw = (img: HTMLImageElement | null) => {
             // Draw background color or image
-            ctx.fillStyle = '#1e293b'; // slate-800
+            ctx.fillStyle = '#7c2d12'; // orange-900
             ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
             if (img) {
@@ -123,7 +119,7 @@ export const Preview = forwardRef<HTMLCanvasElement, PreviewProps>(({
             ctx.font = `bold ${titleHeight}px "Pretendard", "Noto Sans KR", sans-serif`;
             const titleLines = wrapText(ctx, title, maxWidth);
             
-            ctx.font = `500 ${subtitleHeight}px "Pretendard", "Noto Sans KR", sans-serif`;
+            ctx.font = `500 ${subtitleHeight}px "Caveat", "Pretendard", "Noto Sans KR", sans-serif`;
             const subtitleLines = wrapText(ctx, subtitle, maxWidth);
 
             const titleBlockHeight = titleLines.length * titleHeight;
@@ -136,47 +132,56 @@ export const Preview = forwardRef<HTMLCanvasElement, PreviewProps>(({
             
             let firstLineTitleY: number;
             
-            switch (textPosition) {
-                case TextPosition.Top:
-                    firstLineTitleY = 150 + titleHeight / 2;
-                    break;
-                case TextPosition.Center:
-                    firstLineTitleY = (CANVAS_HEIGHT / 2) - (totalTextHeight / 2) + (titleHeight / 2);
-                    break;
-                case TextPosition.Bottom:
-                default:
-                    firstLineTitleY = CANVAS_HEIGHT - 150 - totalTextHeight + titleHeight / 2;
-                    break;
-            }
-
-            const firstLineSubtitleY = (firstLineTitleY - titleHeight / 2 + titleBlockHeight) + lineSpacing + subtitleHeight / 2;
-            
-            // --- Box Drawing ---
+            // --- Box and Text Positioning ---
             if (textStyle === 'box') {
-                ctx.font = `bold ${titleHeight}px "Pretendard", "Noto Sans KR", sans-serif`;
-                const titleMetrics = titleLines.map(line => ctx.measureText(line));
-                const maxTitleWidth = titleLines.length > 0 ? Math.max(0, ...titleMetrics.map(m => m.width)) : 0;
-
-                ctx.font = `500 ${subtitleHeight}px "Pretendard", "Noto Sans KR", sans-serif`;
-                const subtitleMetrics = subtitleLines.map(line => ctx.measureText(line));
-                const maxSubtitleWidth = subtitleLines.length > 0 ? Math.max(0, ...subtitleMetrics.map(m => m.width)) : 0;
-
                 const boxPaddingVertical = 30;
-                const boxPaddingHorizontal = 40;
-                const boxWidth = Math.max(maxTitleWidth, maxSubtitleWidth) + (boxPaddingHorizontal * 2);
                 const boxHeight = totalTextHeight + (boxPaddingVertical * 2);
-                const boxX = (CANVAS_WIDTH - boxWidth) / 2;
-                const boxY = firstLineTitleY - (titleHeight / 2) - boxPaddingVertical;
+                const boxWidth = CANVAS_WIDTH;
+                const boxX = 0;
+                let boxY: number;
 
+                switch (textPosition) {
+                    case TextPosition.Top:
+                        boxY = 0;
+                        break;
+                    case TextPosition.Center:
+                        boxY = (CANVAS_HEIGHT - boxHeight) / 2;
+                        break;
+                    case TextPosition.Bottom:
+                    default:
+                        boxY = CANVAS_HEIGHT - boxHeight;
+                        break;
+                }
+                
+                // Draw Box
                 const effectiveColorType = boxColorType === 'auto' ? getAutoBoxColor(textColor) : boxColorType;
                 const baseRgb = effectiveColorType === 'light' ? '255, 255, 255' : '0, 0, 0';
-                const alpha = boxTransparency === 'normal' ? 0.3 : 0.5;
+                const alpha = 0.7; // Fixed 70% transparency
                 
                 ctx.fillStyle = `rgba(${baseRgb}, ${alpha})`;
                 ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+                
+                // Position text inside the box
+                firstLineTitleY = boxY + boxPaddingVertical + (titleHeight / 2);
+
+            } else {
+                // Original text positioning for 'none' or 'outline'
+                switch (textPosition) {
+                    case TextPosition.Top:
+                        firstLineTitleY = 150 + titleHeight / 2;
+                        break;
+                    case TextPosition.Center:
+                        firstLineTitleY = (CANVAS_HEIGHT / 2) - (totalTextHeight / 2) + (titleHeight / 2);
+                        break;
+                    case TextPosition.Bottom:
+                    default:
+                        firstLineTitleY = CANVAS_HEIGHT - 150 - totalTextHeight + titleHeight / 2;
+                        break;
+                }
             }
-
-
+            
+            const firstLineSubtitleY = (firstLineTitleY - titleHeight / 2 + titleBlockHeight) + lineSpacing + subtitleHeight / 2;
+            
             // --- Text Drawing ---
             // Reset shadow and set stroke styles
             ctx.shadowColor = 'transparent';
@@ -206,7 +211,7 @@ export const Preview = forwardRef<HTMLCanvasElement, PreviewProps>(({
 
             // Draw Subtitle
             const subtitleColor = adjustColorBrightness(textColor, -10); // 10% darker
-            ctx.font = `500 ${subtitleHeight}px "Pretendard", "Noto Sans KR", sans-serif`; // Medium weight
+            ctx.font = `500 ${subtitleHeight}px "Caveat", "Pretendard", "Noto Sans KR", sans-serif`; // Medium weight
             ctx.fillStyle = subtitleColor;
             subtitleLines.forEach((line, index) => {
                 const y = firstLineSubtitleY + (index * subtitleHeight);
@@ -217,18 +222,39 @@ export const Preview = forwardRef<HTMLCanvasElement, PreviewProps>(({
             });
         };
 
-        if (backgroundImage) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => draw(img);
-                img.src = e.target?.result as string;
-            };
-            reader.readAsDataURL(backgroundImage);
-        } else {
-            draw(null);
-        }
-    }, [backgroundImage, title, subtitle, textPosition, textColor, brightness, textStyle, outlineColor, boxColorType, boxTransparency, canvasRef]);
+        const performDraw = () => {
+            if (backgroundImage) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => draw(img);
+                    img.src = e.target?.result as string;
+                };
+                reader.readAsDataURL(backgroundImage);
+            } else {
+                draw(null);
+            }
+        };
+
+        const loadFontsAndDraw = async () => {
+            try {
+                // Use document.fonts.load for more explicit control over font loading.
+                // This ensures that the specific fonts we need for the canvas are
+                // available before we attempt to draw.
+                await Promise.all([
+                    document.fonts.load('bold 90px "Pretendard"'),
+                    document.fonts.load('500 68px "Caveat"')
+                ]);
+            } catch (e) {
+                console.warn("Failed to load custom fonts, default fonts will be used.", e);
+            }
+            
+            performDraw();
+        };
+
+        loadFontsAndDraw();
+
+    }, [backgroundImage, title, subtitle, textPosition, textColor, brightness, textStyle, outlineColor, boxColorType, canvasRef]);
     
     return <canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} className="rounded-lg shadow-2xl w-full aspect-square" />;
 });
